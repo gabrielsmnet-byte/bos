@@ -1,0 +1,20 @@
+name: Gerar ISO do BOS
+on:
+  workflow_dispatch:
+jobs:
+  iso:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construir a ISO dentro de um Debian 12 (bookworm)
+        run: |
+          docker run --rm --privileged -v "$PWD":/work -w /work debian:bookworm \
+            bash -c "apt-get update && apt-get install -y sudo ca-certificates && bash construir-iso.sh"
+      - name: Conferir a ISO
+        run: ls -lh WebOS.iso
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BOS-iso
+          path: WebOS.iso
+          compression-level: 0
